@@ -89,7 +89,7 @@ services:
       - ./dockur/host1/shared-rw:/shared/shared-rw
       - ./dockur/host1/oem:/oem:ro
       - ./dockur/Win11_24H2_German_x64.iso:/boot.iso:ro
-    restart: always
+#    restart: always
     stop_grace_period: 2m
 
 
