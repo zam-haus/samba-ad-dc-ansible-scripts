@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-set -euo pipefail
+set -euxo pipefail
 . ./.env.sh
 docker compose down
 docker compose build
