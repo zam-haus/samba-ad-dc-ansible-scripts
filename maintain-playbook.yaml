@@ -28,7 +28,7 @@
         - name: Find FSMO roles target
           samba_tool_transfer_fsmo_roles:
             away_from_adcs: "{{ ansible_play_batch }}"
-            domain: "ad.srv.zam.haus"
+            domain: "ad.zam.haus"
           register: fsmo_transfer_target
         - name : Debug fsmo_transfer_target
           debug:
@@ -36,7 +36,7 @@
         - name: Transfer FSMO roles if needed
           delegate_to: "{{ fsmo_transfer_target.target }}"
           samba_tool_transfer_fsmo_roles:
-            domain: "ad.srv.zam.haus"
+            domain: "ad.zam.haus"
             transfer: true
             administrator_password: "{{ administrator_password }}"
           when: fsmo_transfer_target.changed
@@ -65,7 +65,7 @@
             - name: Transfer the FSMO roles back if needed
               delegate_to: "{{ ansible_play_hosts_all[0] }}"
               samba_tool_transfer_fsmo_roles:
-                domain: "ad.srv.zam.haus"
+                domain: "ad.zam.haus"
                 transfer: true
                 administrator_password: "{{ administrator_password }}"
 
@@ -82,7 +82,7 @@
         - name: Test the DNS
           test_ad_dns:
             adc_list: "{{ ansible_play_hosts_all }}"
-            domain: "ad.srv.zam.haus"
+            domain: "ad.zam.haus"
           register: dns_test_out
 
 
@@ -99,7 +99,7 @@
       block:
         - name: Copy GPOs from the first host of the adcs group to the localhost
           synchronize:
-            src: "/var/lib/samba/sysvol/ad.srv.zam.haus/"
+            src: "/var/lib/samba/sysvol/ad.zam.haus/"
             dest: "./tmp/sysvol/"
             mode: pull
             archive: true
@@ -107,7 +107,7 @@
         - name: Copy GPOs to each other host of the adcs group from the localhost
           synchronize:
             src: "./tmp/sysvol/"
-            dest: "/var/lib/samba/sysvol/ad.srv.zam.haus/"
+            dest: "/var/lib/samba/sysvol/ad.zam.haus/"
             mode: push
             archive: true
           when: inventory_hostname != ansible_play_hosts_all[0]

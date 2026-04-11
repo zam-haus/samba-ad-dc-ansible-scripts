@@ -1,5 +1,5 @@
 $TTL    1d ; default expiration time (in seconds) of all RRs without their own TTL value
-@       IN      SOA     ad001.srv.zam.haus. hostmaster.ad.srv.zam.haus. (
+@       IN      SOA     ad001.srv.zam.haus. hostmaster.ad.zam.haus. (
                   3      ; Serial
                   1d     ; Refresh
                   1h     ; Retry
@@ -9,8 +9,4 @@ $TTL    1d ; default expiration time (in seconds) of all RRs without their own T
 ; name servers - NS records
 ad001.srv.zam.haus.      IN      A      10.5.0.2
 @                        IN      NS     ad001.srv.zam.haus.
-
-; name servers - A records
-; ad.srv.zam.haus.             IN      A      10.5.0.2
-; ad.srv.zam.haus.             IN      A      10.5.0.3
 

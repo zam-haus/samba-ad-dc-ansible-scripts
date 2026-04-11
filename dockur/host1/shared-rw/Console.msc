@@ -190,10 +190,10 @@
       <Strings>
         <String ID="1" Refs="1">Favoriten</String>
         <String ID="3" Refs="2">Konsolenstamm</String>
-        <String ID="6" Refs="1">Active Directory-Benutzer und -Computer [f6b9ef6a5f00.ad.srv.zam.haus]</String>
+        <String ID="6" Refs="1">Active Directory-Benutzer und -Computer [f6b9ef6a5f00.ad.zam.haus]</String>
         <String ID="9" Refs="1">ADSI-Editor</String>
         <String ID="10" Refs="1">Active Directory-Domänen und -Vertrauensstellungen</String>
-        <String ID="11" Refs="1">Active Directory-Standorte und -Dienste [f6b9ef6a5f00.ad.srv.zam.haus]</String>
+        <String ID="11" Refs="1">Active Directory-Standorte und -Dienste [f6b9ef6a5f00.ad.zam.haus]</String>
         <String ID="12" Refs="1">Gruppenrichtlinienverwaltung</String>
       </Strings>
     </StringTable>

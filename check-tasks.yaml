@@ -13,7 +13,7 @@
       environment:
         target_adc: "{{ item[0] }}"
         dns_entry_adc: "{{ item[1] }}.srv.zam.haus"
-        dns_entry_resolver: "{{ item[1] }}.ad.arv.zam.haus"
+        dns_entry_resolver: "{{ item[1] }}.ad.zam.haus"
       # Verify that the DNS entry from the AD matches the resolver in A and AAAA records
       script: "scripts/check_dns.sh"
       tags: [ fails ]

@@ -25,8 +25,8 @@
           {% if 'ansible_default_ipv4' in hostvars[host] and 'address' in hostvars[host]['ansible_default_ipv4']  %}
           {{ hostvars[host]['ansible_default_ipv4']['address'] }}  {{ host }}
           {{ hostvars[host]['ansible_default_ipv4']['address'] }}  {{ hostvars[host]['inventory_hostname_short'] }}
-          {{ hostvars[host]['ansible_default_ipv4']['address'] }}  {{ hostvars[host]['inventory_hostname_short'] }}.ad.srv.zam.haus
-          {{ hostvars[host]['ansible_default_ipv4']['address'] }}  ad.srv.zam.haus
+          {{ hostvars[host]['ansible_default_ipv4']['address'] }}  {{ hostvars[host]['inventory_hostname_short'] }}.ad.zam.haus
+          {{ hostvars[host]['ansible_default_ipv4']['address'] }}  ad.zam.haus
           {% endif %}
           {% endfor %}
         path: /etc/hosts
@@ -117,7 +117,7 @@
                 --domain AD \
                 --server-role dc \
                 --dns-backend SAMBA_INTERNAL \
-                --realm AD.SRV.ZAM.HAUS \
+                --realm ad.zam.haus \
                 --adminpass {{ administrator_password|quote }}
               register: provision_out
               ignore_errors: true
@@ -165,10 +165,10 @@
               fail:
                 msg: "Getting domain info failed. See previous output."
               when: domain_info_out.rc != 0
-            - name: Add dns record for <hostname>.ad.srv.zam.haus
+            - name: Add dns record for <hostname>.ad.zam.haus
               when: "'docker' not in group_names"
               shell: |
-                samba-tool dns add -U='AD\Administrator' --password={{ administrator_password|quote }} ad001.srv.zam.haus ad.srv.zam.haus {{ inventory_hostname_short | quote }}.ad.srv.zam.haus A {{ ansible_default_ipv4.address | quote }}
+                samba-tool dns add -U='AD\Administrator' --password={{ administrator_password|quote }} ad001.srv.zam.haus ad.zam.haus {{ inventory_hostname_short | quote }}.ad.zam.haus A {{ ansible_default_ipv4.address | quote }}
               register: add_dns_out
               changed_when: add_dns_out.rc == 0
               failed_when: add_dns_out.rc != 0 and ('WERR_DNS_ERROR_RECORD_ALREADY_EXISTS' not in add_dns_out.stderr)
@@ -206,8 +206,8 @@
             - name: Join the domain
               shell: |
                 timeout 120 \
-                samba-tool domain join ad.srv.zam.haus dc \
-                -U"administrator" --realm=ad.srv.zam.haus --password={{ administrator_password|quote }}
+                samba-tool domain join ad.zam.haus dc \
+                -U"administrator" --realm=ad.zam.haus --password={{ administrator_password|quote }}
               register: join_out
               ignore_errors: true
             - name: Debug join output
@@ -254,16 +254,16 @@
               fail:
                 msg: "Getting domain info failed. See previous output."
               when: domain_info_out.rc != 0
-        - name: Add dns record for ad.srv.zam.haus
+        - name: Add dns record for ad.zam.haus
           shell: |
-            samba-tool dns add -U='AD\Administrator' --password={{ administrator_password|quote }} ad001.srv.zam.haus ad.srv.zam.haus ad.srv.zam.haus A {{ (ansible_default_ipv4.address if 'docker' not in group_names else inventory_hostname) | quote }}
+            samba-tool dns add -U='AD\Administrator' --password={{ administrator_password|quote }} ad001.srv.zam.haus ad.zam.haus ad.zam.haus A {{ (ansible_default_ipv4.address if 'docker' not in group_names else inventory_hostname) | quote }}
           register: add_dns_out
           changed_when: add_dns_out.rc == 0
           failed_when: add_dns_out.rc != 0 and ('WERR_DNS_ERROR_RECORD_ALREADY_EXISTS' not in add_dns_out.stderr)
-        - name: Add dns record for <hostname>.ad.srv.zam.haus
+        - name: Add dns record for <hostname>.ad.zam.haus
           when: "'docker' not in group_names"
           shell: |
-            samba-tool dns add -U='AD\Administrator' --password={{ administrator_password|quote }} ad001.srv.zam.haus ad.srv.zam.haus {{ inventory_hostname_short | quote }}.ad.srv.zam.haus A {{ ansible_default_ipv4.address | quote }}
+            samba-tool dns add -U='AD\Administrator' --password={{ administrator_password|quote }} ad001.srv.zam.haus ad.zam.haus {{ inventory_hostname_short | quote }}.ad.zam.haus A {{ ansible_default_ipv4.address | quote }}
           register: add_dns_out2
           changed_when: add_dns_out.rc == 0
           failed_when: add_dns_out.rc != 0 and ('WERR_DNS_ERROR_RECORD_ALREADY_EXISTS' not in add_dns_out.stderr)
@@ -319,7 +319,7 @@
         - name: Test the DNS
           test_ad_dns:
             adc_list: "{{ ansible_play_hosts_all }}"
-            domain: "ad.srv.zam.haus"
+            domain: "ad.zam.haus"
           register: dns_test_out
           retries: 5
           delay: 1
@@ -445,8 +445,8 @@
             executable: /bin/bash
           shell: |
             set -euxo pipefail
-            ldbsearch -H ldap://ad.srv.zam.haus "cn=administrator" -U AD\\Administrator --password {{ administrator_password|quote }} \
-                | grep "memberOf: CN=Domain Admins,CN=Users,DC=ad,DC=srv,DC=zam,DC=haus"
+            ldbsearch -H ldap://ad.zam.haus "cn=administrator" -U AD\\Administrator --password {{ administrator_password|quote }} \
+                | grep "memberOf: CN=Domain Admins,CN=Users,DC=ad,DC=zam,DC=haus"
           changed_when: false
         - name: Test kerberos
           # This does not work with --use-kerberos=required in Debian / with smbclient 4.22. It works with --use-kerberos=desired. Ubuntu supports both with smbclient 4.19.
@@ -456,9 +456,9 @@
                 executable: /bin/bash
               shell: |
                 set -euxo pipefail
-                kinit --password-file=<(echo {{ administrator_password|quote }}) Administrator@AD.SRV.ZAM.HAUS
+                kinit --password-file=<(echo {{ administrator_password|quote }}) Administrator@ad.zam.haus
                 klist
-                smbclient -L {{ ansible_hostname|quote }}.ad.srv.zam.haus --use-kerberos desired -N
+                smbclient -L {{ ansible_hostname|quote }}.ad.zam.haus --use-kerberos desired -N
               changed_when: false
           always:
             - name: Destroy kerberos ticket

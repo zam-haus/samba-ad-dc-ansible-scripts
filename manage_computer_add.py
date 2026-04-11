@@ -68,7 +68,7 @@ $joinCred = New-Object pscredential -ArgumentList ([pscustomobject]@{
     Password = (ConvertTo-SecureString -String "''' + computer_password + '''" -AsPlainText -Force)[0]
 })
 $addComputerSplat = @{
-    DomainName = "ad.srv.zam.haus"
+    DomainName = "ad.zam.haus"
     Options = 'UnsecuredJoin', 'PasswordPass'
     Credential = $joinCred
 }

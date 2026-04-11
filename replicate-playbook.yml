@@ -16,22 +16,22 @@
         - name: Set list of DNs to replicate
           set_fact:
             replicate_dns:
-              - "DC=ad,DC=srv,DC=zam,DC=haus"
-              - "CN=Configuration,DC=ad,DC=srv,DC=zam,DC=haus"
-              - "CN=Schema,CN=Configuration,DC=ad,DC=srv,DC=zam,DC=haus"
-              - "DC=DomainDnsZones,DC=ad,DC=srv,DC=zam,DC=haus"
-              - "DC=ForestDnsZones,DC=ad,DC=srv,DC=zam,DC=haus"
+              - "DC=ad,DC=zam,DC=haus"
+              - "CN=Configuration,DC=ad,DC=zam,DC=haus"
+              - "CN=Schema,CN=Configuration,DC=ad,DC=zam,DC=haus"
+              - "DC=DomainDnsZones,DC=ad,DC=zam,DC=haus"
+              - "DC=ForestDnsZones,DC=ad,DC=zam,DC=haus"
         - name: Replicate
           throttle: 1
           timeout: 120
           loop: "{{ ansible_play_hosts | product(replicate_dns) | list}}"
           when: item.0 != inventory_hostname
           loop_control:
-            label: "replication:    {{ hostvars[inventory_hostname]['ansible_hostname'] }}.ad.srv.zam.haus = {{ inventory_hostname }}   <=>    {{ hostvars[item.0]['ansible_hostname'] }}.ad.srv.zam.haus = {{ item.0 }}    DN: {{ item.1 }}"
+            label: "replication:    {{ hostvars[inventory_hostname]['ansible_hostname'] }}.ad.zam.haus = {{ inventory_hostname }}   <=>    {{ hostvars[item.0]['ansible_hostname'] }}.ad.zam.haus = {{ item.0 }}    DN: {{ item.1 }}"
           shell: |
             set -eux
-            samba-tool drs replicate {{hostvars[inventory_hostname]['ansible_hostname']}}.ad.srv.zam.haus {{hostvars[item.0]['ansible_hostname']}}.ad.srv.zam.haus {{ item.1 }}
-            samba-tool drs replicate {{hostvars[item.0]['ansible_hostname']}}.ad.srv.zam.haus {{hostvars[inventory_hostname]['ansible_hostname']}}.ad.srv.zam.haus {{ item.1 }}
+            samba-tool drs replicate {{hostvars[inventory_hostname]['ansible_hostname']}}.ad.zam.haus {{hostvars[item.0]['ansible_hostname']}}.ad.zam.haus {{ item.1 }}
+            samba-tool drs replicate {{hostvars[item.0]['ansible_hostname']}}.ad.zam.haus {{hostvars[inventory_hostname]['ansible_hostname']}}.ad.zam.haus {{ item.1 }}
         - name: Check Replication
           samba_tool_drs_showrepl:
             since: "{{ now_1 }}"
