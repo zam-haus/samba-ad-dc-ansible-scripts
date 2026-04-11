@@ -4,7 +4,8 @@ How to use:
 # Create a venv
 # Install ansible
 # Optional: install xfreedrp3 or remmina for RDP (required by rdp.py)
-# Optional: install sshpass for ansible ssh password authentication (required by pssh.sh)
+# Optional: install pssh and sshpass for ansible ssh password authentication (required by pssh.sh)
+. .env.sh
 ./build.sh
 ./ansible-playbook.sh install-playbook.yaml
 ./ansible-playbook.sh maintain-playbook.yaml
