@@ -96,6 +96,12 @@ def get_ips(domain, record_type, resolver_ip=None):
     answers = resolver.resolve(domain, record_type)
     return [answer.to_text() for answer in answers]
 
+def to_ips(hostname_or_ip):
+    try:
+        ip = ipaddress.ip_address(hostname_or_ip)
+        return [str(ip)]
+    except ValueError:
+        return get_ips(hostname_or_ip, "A")
 
 def find_target_adc(away_from_adcs, domain,
                     module: AnsibleModule,
@@ -106,11 +112,7 @@ def find_target_adc(away_from_adcs, domain,
     blacklist = {
         ip
         for adc in away_from_adcs
-        for ip in (
-            get_ips(adc, "A", domain_ip)
-            if not ipaddress.ip_address(adc)
-            else [adc]
-        )
+        for ip in to_ips(adc)
     }
     result['blacklist'] = blacklist
     whitelist = set(get_ips(domain, "A", domain_ip))

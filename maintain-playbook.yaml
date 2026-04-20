@@ -35,6 +35,7 @@
             var: fsmo_transfer_target
         - name: Transfer FSMO roles if needed
           delegate_to: "{{ fsmo_transfer_target.target }}"
+          remote_user: "phi1010"
           samba_tool_transfer_fsmo_roles:
             domain: "ad.zam.haus"
             transfer: true
@@ -64,6 +65,7 @@
                 timeout: 10
             - name: Transfer the FSMO roles back if needed
               delegate_to: "{{ ansible_play_hosts_all[0] }}"
+              remote_user: "phi1010"
               samba_tool_transfer_fsmo_roles:
                 domain: "ad.zam.haus"
                 transfer: true

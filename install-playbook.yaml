@@ -75,6 +75,7 @@
         - smbd
         - nmbd
         - winbind
+        - samba-ad-dc
 
     - name: Maintain uv
       when: false
@@ -112,7 +113,7 @@
               shell: rm -f /etc/samba/smb.conf
             - name: Provision
               shell: |
-                timeout 120 \
+                timeout 300 \
                 samba-tool domain provision \
                 --domain AD \
                 --server-role dc \
@@ -205,7 +206,7 @@
               shell: rm -f /etc/samba/smb.conf
             - name: Join the domain
               shell: |
-                timeout 120 \
+                timeout 300 \
                 samba-tool domain join ad.zam.haus dc \
                 -U"administrator" --realm=ad.zam.haus --password={{ administrator_password|quote }}
               register: join_out
@@ -406,13 +407,14 @@
             state: restarted
             enabled: yes
 
-        - name: Wait for ntpd to be started
-          wait_for:
-            port: 123
-            state: started
-            delay: 0
-            timeout: 5
-          ignore_errors: "{{ 'docker' in group_names }}"
+        # TODO does not work in prod, and cannot be tested in docker due to missing systemd.
+        #- name: Wait for ntpd to be started
+        #  wait_for:
+        #    port: 123
+        #    state: started
+        #    delay: 0
+        #    timeout: 10
+        #  ignore_errors: "{{ 'docker' in group_names }}"
 
         - name: Start daemon manually when in docker and when necessary
           when: "'docker' in group_names"
@@ -458,7 +460,7 @@
                 set -euxo pipefail
                 kinit --password-file=<(echo {{ administrator_password|quote }}) Administrator@ad.zam.haus
                 klist
-                smbclient -L {{ ansible_hostname|quote }}.ad.zam.haus --use-kerberos desired -N
+                smbclient -L {{ inventory_hostname|quote }}.ad.zam.haus --use-kerberos desired -N
               changed_when: false
           always:
             - name: Destroy kerberos ticket
